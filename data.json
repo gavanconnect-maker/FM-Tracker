@@ -1,0 +1,14 @@
+{
+  "appName": "LightBlueExpenseTracker",
+  "config": {
+    "owner": "gavanconnect-maker",
+    "repo": "FM-Tracker",
+    "path": "data.json",
+    "token": "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"
+  },
+  "currency": "₹",
+  "categories": [
+    "RAJESH-BUILDER"
+  ],
+  "expenses": []
+}
