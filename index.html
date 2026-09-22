@@ -40,7 +40,6 @@
     </script>
 
     <style>
-        /* Custom Ice Blue scrollbars */
         ::-webkit-scrollbar {
             width: 8px;
             height: 8px;
@@ -130,15 +129,12 @@
                 </div>
             </div>
 
-            <!-- Currency & Import/Export Controls -->
             <div class="flex items-center space-x-2.5">
-                <!-- Sync Status Indicator -->
                 <div id="syncBadge" class="flex items-center space-x-1.5 bg-slate-900/60 border border-slate-700 px-2.5 py-1.5 rounded-lg text-xs font-mono text-slate-300">
                     <span id="syncDot" class="w-2 h-2 rounded-full bg-slate-400"></span>
                     <span id="syncStatusText">Not Configured</span>
                 </div>
 
-                <!-- Currency Selector -->
                 <div class="flex items-center space-x-1.5 bg-sky-950/60 border border-sky-600/50 px-2.5 py-1.5 rounded-lg text-xs">
                     <i class="fa-solid fa-coins text-sky-300 text-xs"></i>
                     <select id="currencySelect" onchange="changeCurrency(this.value)" class="bg-transparent text-white font-mono font-bold focus:outline-none cursor-pointer">
@@ -149,7 +145,6 @@
                     </select>
                 </div>
 
-                <!-- Export JSON Button -->
                 <button onclick="exportDataJSON()" class="bg-white text-sky-900 hover:bg-sky-50 border border-sky-200 px-3 py-1.5 rounded-lg text-xs font-bold flex items-center space-x-1.5 transition-all shadow-sm">
                     <i class="fa-solid fa-file-code text-sky-600"></i>
                     <span class="hidden sm:inline">Export JSON</span>
@@ -160,7 +155,6 @@
 
     <main class="flex-1 max-w-7xl w-full mx-auto px-4 py-6 space-y-5">
 
-        <!-- Prominent Total Expenses Banner -->
         <section class="blue-card p-6 bg-gradient-to-r from-white via-sky-50/50 to-sky-100/60 border-l-8 border-l-skyblue-500 relative overflow-hidden flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div class="space-y-2 z-10">
                 <div class="flex items-center space-x-2">
@@ -188,7 +182,6 @@
                 </button>
             </div>
 
-            <!-- Background Watermark Graphic -->
             <div class="absolute right-4 -bottom-8 text-sky-200/40 text-9xl pointer-events-none font-mono font-black select-none">
                 <i class="fa-solid fa-receipt"></i>
             </div>
@@ -209,24 +202,24 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                     <div>
                         <label for="ghOwner" class="block text-[11px] font-bold text-slate-700 mb-1 font-mono">GitHub Username / Org *</label>
-                        <input type="text" id="ghOwner" class="blue-input w-full px-3 py-1.5 text-xs" value="gavanconnect-maker" disabled>
+                        <input type="text" id="ghOwner" class="blue-input w-full px-3 py-1.5 text-xs" value="gavanconnect-maker">
                     </div>
                     <div>
                         <label for="ghRepo" class="block text-[11px] font-bold text-slate-700 mb-1 font-mono">Repository Name *</label>
-                        <input type="text" id="ghRepo" class="blue-input w-full px-3 py-1.5 text-xs" value="FM-Tracker" disabled>
+                        <input type="text" id="ghRepo" class="blue-input w-full px-3 py-1.5 text-xs" value="FM-Tracker">
                     </div>
                     <div>
                         <label for="ghPath" class="block text-[11px] font-bold text-slate-700 mb-1 font-mono">Data File Path *</label>
-                        <input type="text" id="ghPath" class="blue-input w-full px-3 py-1.5 text-xs" value="data.json" disabled>
+                        <input type="text" id="ghPath" class="blue-input w-full px-3 py-1.5 text-xs" value="data.json">
                     </div>
                     <div>
                         <label for="ghToken" class="block text-[11px] font-bold text-slate-700 mb-1 font-mono">Personal Access Token (PAT) *</label>
-                        <input type="password" id="ghToken" class="blue-input w-full px-3 py-1.5 text-xs font-mono" value="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" disabled>
+                        <input type="password" id="ghToken" class="blue-input w-full px-3 py-1.5 text-xs font-mono" placeholder="ghp_xxxxxxxxxxxx">
                     </div>
                 </div>
 
                 <div class="flex items-center justify-between pt-1">
-                    <p class="text-[11px] text-slate-500 italic">Credentials are stored in local browser settings only and used directly for GitHub API calls[cite: 1].</p>
+                    <p class="text-[11px] text-slate-500 italic">Credentials are stored in local browser settings (`localStorage`) and used directly for GitHub API calls[cite: 1].</p>
                     <div class="flex space-x-2">
                         <button onclick="saveGitHubConfig()" class="blue-btn-primary px-4 py-1.5 text-xs flex items-center space-x-1.5">
                             <i class="fa-solid fa-floppy-disk"></i>
@@ -254,13 +247,11 @@
             <form id="expenseForm" onsubmit="handleFormSubmit(event)" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-4 items-end">
                 <input type="hidden" id="editId" value="">
 
-                <!-- Date Picker -->
                 <div class="lg:col-span-3">
                     <label for="txDate" class="block text-xs font-bold text-slate-700 mb-1 font-mono">Date *</label>
                     <input type="date" id="txDate" required class="blue-input w-full px-3 py-2 text-xs font-medium">
                 </div>
 
-                <!-- Category Dropdown -->
                 <div class="lg:col-span-3">
                     <div class="flex justify-between items-center mb-1">
                         <label for="txCategory" class="block text-xs font-bold text-slate-700 font-mono">Category *</label>
@@ -269,23 +260,19 @@
                         </button>
                     </div>
                     <select id="txCategory" required class="blue-input w-full px-3 py-2 text-xs font-medium">
-                        <!-- Dynamic Categories -->
                     </select>
                 </div>
 
-                <!-- Amount Input -->
                 <div class="lg:col-span-2">
                     <label for="txAmount" class="block text-xs font-bold text-slate-700 mb-1 font-mono">Amount (<span class="currencySymbol">₹</span>) *</label>
                     <input type="number" id="txAmount" step="0.01" min="0.01" placeholder="0.00" required class="blue-input w-full px-3 py-2 text-xs font-mono font-bold">
                 </div>
 
-                <!-- Remarks Input -->
                 <div class="lg:col-span-2">
                     <label for="txRemarks" class="block text-xs font-bold text-slate-700 mb-1 font-mono">Remarks / Note *</label>
                     <input type="text" id="txRemarks" placeholder="Description or vendor..." required class="blue-input w-full px-3 py-2 text-xs font-medium">
                 </div>
 
-                <!-- Action Button -->
                 <div class="lg:col-span-2">
                     <button type="submit" id="submitBtn" class="blue-btn-primary w-full py-2 px-3 text-xs flex items-center justify-center space-x-1.5 h-[38px]">
                         <i class="fa-solid fa-check"></i>
@@ -296,7 +283,6 @@
         </section>
 
         <section class="blue-card overflow-hidden">
-            <!-- Filter Ribbon Header -->
             <div class="p-4 bg-sky-50/80 border-b border-slate-200 space-y-3.5">
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                     <div class="flex items-center space-x-2">
@@ -316,10 +302,7 @@
                     </div>
                 </div>
 
-                <!-- Filter Inputs Grid -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-3">
-                    
-                    <!-- Search Input -->
                     <div class="lg:col-span-3">
                         <label class="block text-[11px] font-bold text-slate-600 mb-0.5 font-mono">Search Remarks</label>
                         <div class="relative">
@@ -328,7 +311,6 @@
                         </div>
                     </div>
 
-                    <!-- Category Filter Dropdown -->
                     <div class="lg:col-span-3">
                         <label class="block text-[11px] font-bold text-slate-600 mb-0.5 font-mono">Category</label>
                         <select id="categoryFilter" onchange="applyFilters()" class="blue-input w-full px-3 py-1.5 text-xs font-medium">
@@ -336,19 +318,16 @@
                         </select>
                     </div>
 
-                    <!-- From Date Picker -->
                     <div class="lg:col-span-2">
                         <label class="block text-[11px] font-bold text-slate-600 mb-0.5 font-mono">From Date</label>
                         <input type="date" id="fromDateFilter" onchange="applyFilters()" class="blue-input w-full px-2.5 py-1.5 text-xs">
                     </div>
 
-                    <!-- To Date Picker -->
                     <div class="lg:col-span-2">
                         <label class="block text-[11px] font-bold text-slate-600 mb-0.5 font-mono">To Date</label>
                         <input type="date" id="toDateFilter" onchange="applyFilters()" class="blue-input w-full px-2.5 py-1.5 text-xs">
                     </div>
 
-                    <!-- Sort Column Option -->
                     <div class="lg:col-span-2">
                         <label class="block text-[11px] font-bold text-slate-600 mb-0.5 font-mono">Sort By</label>
                         <select id="sortFilter" onchange="applyFilters()" class="blue-input w-full px-2.5 py-1.5 text-xs font-medium">
@@ -358,10 +337,8 @@
                             <option value="amount-asc">Amount (Low to High)</option>
                         </select>
                     </div>
-
                 </div>
 
-                <!-- Quick Date Presets Buttons -->
                 <div class="flex items-center space-x-1.5 pt-1 flex-wrap gap-y-1.5 text-xs">
                     <span class="text-[11px] font-mono font-bold text-sky-800 me-1">Quick Ranges:</span>
                     <button onclick="setQuickDate('today')" class="blue-btn-secondary px-2.5 py-0.5 text-[11px]">Today</button>
@@ -372,7 +349,6 @@
                 </div>
             </div>
 
-            <!-- Table Container -->
             <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse">
                     <thead>
@@ -395,11 +371,9 @@
                         </tr>
                     </thead>
                     <tbody id="expenseTableBody" class="divide-y divide-slate-200 text-xs">
-                        <!-- Dynamic Expense Rows -->
                     </tbody>
                 </table>
 
-                <!-- Empty State Message -->
                 <div id="noExpensesMessage" class="hidden py-14 text-center text-slate-500">
                     <div class="w-16 h-16 bg-sky-100 text-skyblue-500 rounded-full flex items-center justify-center mx-auto mb-3 text-2xl shadow-inner">
                         <i class="fa-solid fa-file-circle-xmark"></i>
@@ -411,7 +385,6 @@
         </section>
     </main>
 
-    <!-- Category Manager Modal -->
     <div id="categoryModal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-2xs flex items-center justify-center p-4 z-50 hidden">
         <div class="blue-card p-5 max-w-md w-full space-y-4 shadow-xl">
             <div class="flex justify-between items-center border-b border-slate-200 pb-3">
@@ -421,7 +394,6 @@
                 <button onclick="closeCategoryModal()" class="text-slate-400 hover:text-slate-700"><i class="fa-solid fa-xmark text-sm"></i></button>
             </div>
 
-            <!-- Add Category Control -->
             <div class="flex space-x-2">
                 <input type="text" id="newCategoryInput" placeholder="Enter new category name..." class="blue-input flex-1 px-3 py-2 text-xs">
                 <button onclick="addNewCategory()" class="blue-btn-primary px-4 py-2 text-xs">
@@ -429,11 +401,9 @@
                 </button>
             </div>
 
-            <!-- Category List Container -->
             <div>
                 <label class="block text-[11px] font-mono font-bold text-sky-800 mb-1.5">Existing Categories</label>
                 <div id="categoryListContainer" class="max-h-56 overflow-y-auto space-y-1.5 pr-1 border border-slate-200 p-2 rounded-xl bg-sky-50/40">
-                    <!-- Dynamic List Items -->
                 </div>
             </div>
 
@@ -443,7 +413,6 @@
         </div>
     </div>
 
-    <!-- Clear Data Modal -->
     <div id="clearDataModal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-2xs flex items-center justify-center p-4 z-50 hidden">
         <div class="blue-card p-6 max-w-sm w-full space-y-4 text-center shadow-xl">
             <div class="w-12 h-12 bg-rose-100 text-rose-600 rounded-full flex items-center justify-center mx-auto text-xl shadow-xs">
@@ -460,7 +429,6 @@
         </div>
     </div>
 
-    <!-- Application Footer -->
     <footer class="bg-sky-900 text-sky-200 text-[11px] font-mono py-2.5 px-4 border-t border-sky-800 select-none z-20">
         <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2">
             <div class="flex items-center space-x-3">
@@ -474,14 +442,12 @@
         </div>
     </footer>
 
-    <!-- Notification Toast -->
     <div id="toast" class="fixed bottom-8 right-4 bg-slate-900 text-white px-4 py-3 rounded-xl border border-slate-700 shadow-2xl text-xs font-mono flex items-center space-x-2.5 z-50 transform translate-y-12 opacity-0 transition-all duration-200 pointer-events-none">
         <i id="toastIcon" class="fa-solid fa-circle-check text-emerald-400 text-sm"></i>
         <span id="toastMessage">Operation successful</span>
     </div>
 
     <script>
-        // Global Application State
         let currency = "₹";
         const defaultCategories = [
             "Food & Dining",
@@ -497,23 +463,20 @@
         let expenses = [];
         let activeFilteredExpenses = [];
 
-        // GitHub API State
         let ghConfig = {
-            owner: '',
-            repo: '',
+            owner: 'gavanconnect-maker',
+            repo: 'FM-Tracker',
             path: 'data.json',
             token: ''
         };
         let currentFileSHA = null;
 
-        // Date helper function
         function getFormattedDate(daysAgo) {
             const date = new Date();
             date.setDate(date.getDate() - daysAgo);
             return date.toISOString().split('T')[0];
         }
 
-        // Initialization
         window.addEventListener('DOMContentLoaded', () => {
             document.getElementById('txDate').value = getFormattedDate(0);
             loadGitHubConfig();
@@ -526,7 +489,6 @@
             }
         });
 
-        // Toggle Settings Panel Visibility
         function toggleConfigPanel() {
             const panel = document.getElementById('configPanel');
             panel.classList.toggle('hidden');
@@ -559,8 +521,8 @@
             const saved = localStorage.getItem('lightblue_gh_config');
             if (saved) {
                 ghConfig = JSON.parse(saved);
-                document.getElementById('ghOwner').value = ghConfig.owner || '';
-                document.getElementById('ghRepo').value = ghConfig.repo || '';
+                document.getElementById('ghOwner').value = ghConfig.owner || 'gavanconnect-maker';
+                document.getElementById('ghRepo').value = ghConfig.repo || 'FM-Tracker';
                 document.getElementById('ghPath').value = ghConfig.path || 'data.json';
                 document.getElementById('ghToken').value = ghConfig.token || '';
             }
@@ -570,7 +532,7 @@
             ghConfig.owner = document.getElementById('ghOwner').value.trim();
             ghConfig.repo = document.getElementById('ghRepo').value.trim();
             ghConfig.path = document.getElementById('ghPath').value.trim() || 'data.json';
-            ghConfig.token = document.getElementById('ghToken').value.trim();
+            ghConfig.token = document.getElementById('ghToken').value.trim().replace(/^["']|["']$/g, '');
 
             localStorage.setItem('lightblue_gh_config', JSON.stringify(ghConfig));
             showToast("GitHub settings saved");
@@ -582,10 +544,9 @@
             }
         }
 
-        // Fetch Data from GitHub API
         async function loadFromGitHub() {
             if (!isGitHubConfigured()) {
-                showToast("Please complete GitHub settings first", "error");
+                showToast("Please enter a valid PAT token", "error");
                 updateSyncBadge('none');
                 return;
             }
@@ -596,13 +557,19 @@
             try {
                 const response = await fetch(url, {
                     headers: {
-                        'Authorization': `token ${ghConfig.token}`,
+                        'Authorization': `Bearer ${ghConfig.token}`,
                         'Accept': 'application/vnd.github.v3+json'
                     }
                 });
 
+                if (response.status === 401) {
+                    showToast("HTTP 401: Token invalid or expired", "error");
+                    updateSyncBadge('error', 'Auth Failed');
+                    return;
+                }
+
                 if (response.status === 404) {
-                    showToast("Remote file not found. Creating a new repository file on save.", "error");
+                    showToast("Remote file not found. Creating new file on save.", "error");
                     currentFileSHA = null;
                     updateSyncBadge('synced', 'File Ready');
                     return;
@@ -613,7 +580,6 @@
                 const data = await response.json();
                 currentFileSHA = data.sha;
 
-                // UTF-8 base64 decoding helper
                 const decodedContent = decodeURIComponent(escape(atob(data.content.replace(/\n/g, ''))));
                 const parsedData = JSON.parse(decodedContent);
 
@@ -640,10 +606,9 @@
             }
         }
 
-        // Commit and Push Data to GitHub API
         async function saveToGitHub() {
             if (!isGitHubConfigured()) {
-                showToast("Saved locally only (GitHub parameters missing)", "error");
+                showToast("Saved locally only (GitHub token missing)", "error");
                 return;
             }
 
@@ -659,7 +624,6 @@
             };
 
             const jsonString = JSON.stringify(payload, null, 2);
-            // UTF-8 base64 encoding helper
             const contentBase64 = btoa(unescape(encodeURIComponent(jsonString)));
 
             const body = {
@@ -675,7 +639,7 @@
                 const response = await fetch(url, {
                     method: 'PUT',
                     headers: {
-                        'Authorization': `token ${ghConfig.token}`,
+                        'Authorization': `Bearer ${ghConfig.token}`,
                         'Content-Type': 'application/json',
                         'Accept': 'application/vnd.github.v3+json'
                     },
@@ -707,7 +671,6 @@
             showToast(`Currency updated to ${currency}`);
         }
 
-        // Dynamic Category Controls
         function populateCategoryDropdowns() {
             const formSelect = document.getElementById('txCategory');
             const filterSelect = document.getElementById('categoryFilter');
@@ -809,7 +772,6 @@
             showToast(`Deleted category "${catName}"`);
         }
 
-        // Form Submit & Edit Logic
         function handleFormSubmit(e) {
             e.preventDefault();
 
@@ -904,7 +866,6 @@
             applyFilters();
         }
 
-        // Filtering & Sorting
         function applyFilters() {
             const searchVal = document.getElementById('searchFilter').value.toLowerCase();
             const categoryVal = document.getElementById('categoryFilter').value;
@@ -934,7 +895,6 @@
                 return matchesSearch && matchesCategory && matchesFromDate && matchesToDate;
             });
 
-            // Sorting
             activeFilteredExpenses.sort((a, b) => {
                 if (sortVal === 'date-desc') return new Date(b.date) - new Date(a.date);
                 if (sortVal === 'date-asc') return new Date(a.date) - new Date(b.date);
@@ -1051,7 +1011,6 @@
             });
         }
 
-        // Export Logic
         function exportDataJSON() {
             if (expenses.length === 0 && categories.length === defaultCategories.length) {
                 showToast("No data to export", "error");
@@ -1101,7 +1060,6 @@
             showToast("CSV export downloaded");
         }
 
-        // Toast Feedback Alert System
         function showToast(message, type = "success") {
             const toast = document.getElementById('toast');
             const icon = document.getElementById('toastIcon');
