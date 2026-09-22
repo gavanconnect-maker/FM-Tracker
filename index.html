@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LightBlue Expense Tracker</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col">
+
+  <!-- Navigation / Header -->
+  <header class="bg-sky-600 text-white shadow-md p-4 flex justify-between items-center">
+    <div class="flex items-center gap-3">
+      <i class="fa-solid fa-wallet text-2xl"></i>
+      <h1 class="text-xl font-bold">LightBlue Expense Tracker</h1>
+    </div>
+    <button onclick="openTokenModal()" class="bg-sky-700 hover:bg-sky-800 text-sm py-2 px-3 rounded flex items-center gap-2 transition">
+      <i class="fa-solid fa-key"></i>
+      <span>GitHub Settings</span>
+    </button>
+  </header>
+
+  <!-- Main Container -->
+  <main class="flex-grow container mx-auto p-4 max-w-4xl">
+    <!-- Action Bar -->
+    <div class="bg-white p-4 rounded-lg shadow-sm border border-slate-200 mb-6 flex flex-wrap justify-between items-center gap-4">
+      <div>
+        <h2 class="text-lg font-semibold text-slate-700">Data Management</h2>
+        <p class="text-xs text-slate-500">Repository: <span class="font-mono text-sky-600">gavanconnect-maker/FM-Tracker</span></p>
+      </div>
+      <button onclick="saveDataToGitHub()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2.5 rounded-lg font-medium shadow flex items-center gap-2 transition">
+        <i class="fa-solid fa-cloud-arrow-up"></i>
+        <span>Save Data to GitHub</span>
+      </button>
+    </div>
+
+    <!-- Status Message Display -->
+    <div id="statusMessage" class="hidden mb-6 p-4 rounded-lg text-sm font-medium"></div>
+
+    <!-- Tracker Data Preview / Placeholder UI -->
+    <div class="bg-white p-6 rounded-lg shadow-sm border border-slate-200">
+      <h3 class="text-md font-semibold text-slate-700 mb-3">Application State</h3>
+      <textarea id="jsonPreview" class="w-full h-64 p-3 font-mono text-xs bg-slate-900 text-emerald-400 rounded-lg border border-slate-700 focus:outline-none" spellcheck="false"></textarea>
+    </div>
+  </main>
+
+  <!-- GitHub Access Token Modal -->
+  <div id="tokenModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden flex justify-center items-center p-4 z-50">
+    <div class="bg-white rounded-xl shadow-xl max-w-md w-full p-6 border border-slate-100">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+          <i class="fa-solid fa-shield-halved text-sky-600"></i> Configure GitHub Access
+        </h3>
+        <button onclick="closeTokenModal()" class="text-slate-400 hover:text-slate-600">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+      <p class="text-xs text-slate-600 mb-4 leading-relaxed">
+        Provide a <strong>Fine-Grained Personal Access Token</strong> with <code>Contents: Read & Write</code> permissions for <code class="bg-slate-100 p-1 rounded">FM-Tracker</code>. This token is saved securely in your local browser storage and is never committed to GitHub.
+      </p>
+      
+      <div class="mb-4">
+        <label class="block text-xs font-semibold text-slate-700 mb-1">GitHub Personal Access Token</label>
+        <input type="password" id="patInput" placeholder="github_pat_11..." class="w-full p-2.5 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-sky-500 focus:outline-none font-mono" />
+      </div>
+
+      <div class="flex justify-end gap-2">
+        <button onclick="closeTokenModal()" class="px-4 py-2 text-sm text-slate-600 hover:bg-slate-100 rounded-lg">Cancel</button>
+        <button onclick="saveTokenLocally()" class="px-4 py-2 text-sm bg-sky-600 hover:bg-sky-700 text-white rounded-lg font-medium">Save Token</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- JavaScript Logic -->
+  <script>
+    const CONFIG = {
+      owner: "gavanconnect-maker",
+      repo: "FM-Tracker",
+      path: "data.json"
+    };
+
+    let appData = {
+      appName: "LightBlueExpenseTracker",
+      config: CONFIG,
+      currency: "₹",
+      categories: ["RAJESH-BUILDER"],
+      expenses: []
+    };
+
+    // Initialize UI on load
+    document.addEventListener("DOMContentLoaded", () => {
+      document.getElementById("jsonPreview").value = JSON.stringify(appData, null, 2);
+      checkTokenStatus();
+    });
+
+    function checkTokenStatus() {
+      const token = localStorage.getItem("github_pat");
+      if (!token) {
+        showStatus("No GitHub token configured. Click 'GitHub Settings' to enter your token.", "warning");
+      }
+    }
+
+    function openTokenModal() {
+      const currentToken = localStorage.getItem("github_pat") || "";
+      document.getElementById("patInput").value = currentToken;
+      document.getElementById("tokenModal").classList.remove("hidden");
+    }
+
+    function closeTokenModal() {
+      document.getElementById("tokenModal").classList.add("hidden");
+    }
+
+    function saveTokenLocally() {
+      const token = document.getElementById("patInput").value.trim();
+      if (!token) {
+        alert("Please enter a valid GitHub token.");
+        return;
+      }
+      localStorage.setItem("github_pat", token);
+      closeTokenModal();
+      showStatus("GitHub Token saved securely to browser LocalStorage.", "success");
+    }
+
+    async function saveDataToGitHub() {
+      const token = localStorage.getItem("github_pat");
+      if (!token) {
+        openTokenModal();
+        return;
+      }
+
+      showStatus("Saving data to GitHub...", "info");
+
+      try {
+        // Read current JSON text from textarea
+        const updatedContent = JSON.parse(document.getElementById("jsonPreview").value);
+
+        const apiUrl = `https://api.github.com/repos/${CONFIG.owner}/${CONFIG.repo}/contents/${CONFIG.path}`;
+
+        // Step 1: Get current SHA of data.json from GitHub
+        const getRes = await fetch(apiUrl, {
+          headers: { 
+            "Authorization": `Bearer ${token}`,
+            "Accept": "application/vnd.github.v3+json"
+          }
+        });
+
+        if (getRes.status === 401) {
+          throw new Error("HTTP 401: Token invalid or expired. Please update your token in settings.");
+        }
+
+        let sha = "";
+        if (getRes.ok) {
+          const fileInfo = await getRes.json();
+          sha = fileInfo.sha;
+        }
+
+        // Step 2: Encode string to base64
+        const jsonString = JSON.stringify(updatedContent, null, 2);
+        const base64Content = btoa(unescape(encodeURIComponent(jsonString)));
+
+        // Step 3: Send PUT commit request with SHA
+        const putRes = await fetch(apiUrl, {
+          method: "PUT",
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json",
+            "Accept": "application/vnd.github.v3+json"
+          },
+          body: JSON.stringify({
+            message: "Update data.json via web app",
+            content: base64Content,
+            sha: sha
+          })
+        });
+
+        if (!putRes.ok) {
+          const errData = await putRes.json();
+          throw new Error(`GitHub API Error (${putRes.status}): ${errData.message}`);
+        }
+
+        showStatus("Data successfully committed to data.json on GitHub!", "success");
+
+      } catch (err) {
+        showStatus(err.message, "error");
+      }
+    }
+
+    function showStatus(message, type) {
+      const el = document.getElementById("statusMessage");
+      el.classList.remove("hidden", "bg-emerald-100", "text-emerald-800", "bg-rose-100", "text-rose-800", "bg-amber-100", "text-amber-800", "bg-sky-100", "text-sky-800");
+
+      if (type === "success") el.classList.add("bg-emerald-100", "text-emerald-800");
+      else if (type === "error") el.classList.add("bg-rose-100", "text-rose-800");
+      else if (type === "warning") el.classList.add("bg-amber-100", "text-amber-800");
+      else el.classList.add("bg-sky-100", "text-sky-800");
+
+      el.textContent = message;
+    }
+  </script>
+</body>
+</html>
