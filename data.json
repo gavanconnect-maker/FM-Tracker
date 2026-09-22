@@ -1,20 +1,21 @@
 {
   "appName": "LightBlueExpenseTracker",
-  "updatedAt": "2026-09-22T04:22:18.803Z",
+  "config": {
+    "owner": "gavanconnect-maker",
+    "repo": "FM-Tracker",
+    "path": "data.json",
+    "token": "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"
+  },
   "currency": "₹",
   "categories": [
     "Food & Dining",
     "Groceries",
     "Transport",
-    "Utilities"
+    "Utilities",
+    "Shopping",
+    "Health & Medical",
+    "Entertainment",
+    "Bills & Subscriptions"
   ],
-  "expenses": [
-    {
-      "id": "1790050938802",
-      "date": "2026-09-22",
-      "category": "Food & Dining",
-      "remarks": "check",
-      "amount": 1000
-    }
-  ]
+  "expenses": []
 }
