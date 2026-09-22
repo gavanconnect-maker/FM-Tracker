@@ -187,53 +187,6 @@
             </div>
         </section>
 
-        <!-- GitHub Storage Configuration Panel -->
-        <section class="blue-card p-5 border-l-4 border-l-slate-800">
-            <div class="flex justify-between items-center pb-3 mb-3 border-b border-slate-200">
-                <h2 class="text-xs font-bold text-slate-900 uppercase tracking-wider flex items-center font-mono">
-                    <i class="fa-brands fa-github me-2 text-base"></i>GitHub Storage Sync Configuration
-                </h2>
-                <button onclick="toggleConfigPanel()" id="toggleConfigBtn" class="text-xs text-sky-700 hover:underline font-semibold font-mono">
-                    Show/Hide Settings
-                </button>
-            </div>
-
-            <div id="configPanel" class="space-y-3">
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-                    <div>
-                        <label for="ghOwner" class="block text-[11px] font-bold text-slate-700 mb-1 font-mono">GitHub Username / Org *</label>
-                        <input type="text" id="ghOwner" class="blue-input w-full px-3 py-1.5 text-xs" value="gavanconnect-maker" readonly>
-                    </div>
-                    <div>
-                        <label for="ghRepo" class="block text-[11px] font-bold text-slate-700 mb-1 font-mono">Repository Name *</label>
-                        <input type="text" id="ghRepo" class="blue-input w-full px-3 py-1.5 text-xs" value="FM-Tracker" readonly>
-                    </div>
-                    <div>
-                        <label for="ghPath" class="block text-[11px] font-bold text-slate-700 mb-1 font-mono">Data File Path *</label>
-                        <input type="text" id="ghPath" class="blue-input w-full px-3 py-1.5 text-xs" value="data.json" readonly>
-                    </div>
-                    <div>
-                        <label for="ghToken" class="block text-[11px] font-bold text-slate-700 mb-1 font-mono">Personal Access Token (PAT) *</label>
-                        <input type="password" id="ghToken" class="blue-input w-full px-3 py-1.5 text-xs font-mono">
-                    </div>
-                </div>
-
-                <div class="flex items-center justify-between pt-1">
-                    <p class="text-[11px] text-slate-500 italic">Credentials are stored in local browser settings (`localStorage`) and used directly for GitHub API calls[cite: 1].</p>
-                    <div class="flex space-x-2">
-                        <button onclick="saveGitHubConfig()" class="blue-btn-primary px-4 py-1.5 text-xs flex items-center space-x-1.5">
-                            <i class="fa-solid fa-floppy-disk"></i>
-                            <span>Save Config</span>
-                        </button>
-                        <button onclick="loadFromGitHub()" class="blue-btn-secondary px-4 py-1.5 text-xs flex items-center space-x-1.5">
-                            <i class="fa-solid fa-cloud-arrow-down"></i>
-                            <span>Fetch Data Now</span>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </section>
-
         <section class="blue-card p-5">
             <div class="flex justify-between items-center pb-3.5 mb-4 border-b border-slate-200">
                 <h2 id="formTitle" class="text-xs font-bold text-sky-900 uppercase tracking-wider flex items-center font-mono">
@@ -479,20 +432,9 @@
 
         window.addEventListener('DOMContentLoaded', () => {
             document.getElementById('txDate').value = getFormattedDate(0);
-            loadGitHubConfig();
             populateCategoryDropdowns();
-            
-            if (isGitHubConfigured()) {
-                loadFromGitHub();
-            } else {
-                renderDashboard();
-            }
+            loadFromGitHub();
         });
-
-        function toggleConfigPanel() {
-            const panel = document.getElementById('configPanel');
-            panel.classList.toggle('hidden');
-        }
 
         function isGitHubConfigured() {
             return ghConfig.owner && ghConfig.repo && ghConfig.path && ghConfig.token;
@@ -510,68 +452,37 @@
                 text.textContent = message || "Syncing...";
             } else if (status === 'error') {
                 dot.className = "w-2 h-2 rounded-full bg-rose-500";
-                text.textContent = message || "Sync Error";
+                text.textContent = message || "Sync Failed";
             } else {
                 dot.className = "w-2 h-2 rounded-full bg-slate-400";
                 text.textContent = "Not Configured";
             }
         }
 
-        function loadGitHubConfig() {
-            const saved = localStorage.getItem('lightblue_gh_config');
-            if (saved) {
-                ghConfig = JSON.parse(saved);
-                document.getElementById('ghOwner').value = ghConfig.owner || 'gavanconnect-maker';
-                document.getElementById('ghRepo').value = ghConfig.repo || 'FM-Tracker';
-                document.getElementById('ghPath').value = ghConfig.path || 'data.json';
-                document.getElementById('ghToken').value = ghConfig.token || '';
-            }
-        }
-
-        function saveGitHubConfig() {
-            ghConfig.owner = document.getElementById('ghOwner').value.trim();
-            ghConfig.repo = document.getElementById('ghRepo').value.trim();
-            ghConfig.path = document.getElementById('ghPath').value.trim() || 'data.json';
-            ghConfig.token = document.getElementById('ghToken').value.trim().replace(/^["']|["']$/g, '');
-
-            localStorage.setItem('lightblue_gh_config', JSON.stringify(ghConfig));
-            showToast("GitHub settings saved");
-
-            if (isGitHubConfigured()) {
-                loadFromGitHub();
-            } else {
-                updateSyncBadge('none');
-            }
-        }
-
         async function loadFromGitHub() {
-            if (!isGitHubConfigured()) {
-                showToast("Please enter a valid PAT token", "error");
-                updateSyncBadge('none');
-                return;
-            }
-
-            updateSyncBadge('loading', 'Fetching...');
+            updateSyncBadge('loading', 'Syncing...');
             const url = `https://api.github.com/repos/${ghConfig.owner}/${ghConfig.repo}/contents/${ghConfig.path}`;
 
             try {
-                const response = await fetch(url, {
-                    headers: {
-                        'Authorization': `Bearer ${ghConfig.token}`,
-                        'Accept': 'application/vnd.github.v3+json'
-                    }
-                });
+                const headers = { 'Accept': 'application/vnd.github.v3+json' };
+                if (ghConfig.token) {
+                    headers['Authorization'] = `Bearer ${ghConfig.token}`;
+                }
+
+                const response = await fetch(url, { headers });
 
                 if (response.status === 401) {
                     showToast("HTTP 401: Token invalid or expired", "error");
                     updateSyncBadge('error', 'Auth Failed');
+                    renderDashboard();
                     return;
                 }
 
                 if (response.status === 404) {
-                    showToast("Remote file not found. Creating new file on save.", "error");
+                    showToast("Remote file not found. Check repository settings.", "error");
                     currentFileSHA = null;
-                    updateSyncBadge('synced', 'File Ready');
+                    updateSyncBadge('error', 'File Not Found');
+                    renderDashboard();
                     return;
                 }
 
@@ -583,6 +494,9 @@
                 const decodedContent = decodeURIComponent(escape(atob(data.content.replace(/\n/g, ''))));
                 const parsedData = JSON.parse(decodedContent);
 
+                if (parsedData.config) {
+                    ghConfig = { ...ghConfig, ...parsedData.config };
+                }
                 if (parsedData.currency) {
                     currency = parsedData.currency;
                     document.getElementById('currencySelect').value = currency;
@@ -597,18 +511,21 @@
                 updateCurrencySymbols();
                 populateCategoryDropdowns();
                 renderDashboard();
+                
                 updateSyncBadge('synced', 'GitHub Synced');
-                showToast("Data pulled from GitHub");
+                showToast("Data synced successfully from GitHub");
             } catch (err) {
                 console.error("GitHub Fetch Error:", err);
-                updateSyncBadge('error', 'Fetch Failed');
+                updateSyncBadge('error', 'Sync Failed');
                 showToast("Failed to fetch data from GitHub", "error");
+                renderDashboard();
             }
         }
 
         async function saveToGitHub() {
             if (!isGitHubConfigured()) {
-                showToast("Saved locally only (GitHub token missing)", "error");
+                showToast("GitHub configuration missing", "error");
+                updateSyncBadge('error', 'Sync Failed');
                 return;
             }
 
@@ -618,6 +535,7 @@
             const payload = {
                 appName: "LightBlueExpenseTracker",
                 updatedAt: new Date().toISOString(),
+                config: ghConfig,
                 currency: currency,
                 categories: categories,
                 expenses: expenses
@@ -1021,6 +939,7 @@
                 appName: "LightBlueExpenseTracker",
                 version: "2.0.0",
                 exportedAt: new Date().toISOString(),
+                config: ghConfig,
                 currency: currency,
                 categories: categories,
                 expenses: expenses
